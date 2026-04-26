@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CareerStack — Admin</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <a class="brand" href="index.html">Career<span>Stack</span> — Admin</a>
+        <div class="nav-links">
+            <a href="#" onclick="logout()">Logout</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="stat-grid">
+            <div class="stat-card"><div class="stat-label">Total users</div><div class="stat-val" id="stat-users">—</div></div>
+            <div class="stat-card"><div class="stat-label">Active listings</div><div class="stat-val" id="stat-listings" style="color:#0052cc">—</div></div>
+            <div class="stat-card"><div class="stat-label">Total applications</div><div class="stat-val" id="stat-apps" style="color:#007a3d">—</div></div>
+        </div>
+
+        <div class="admin-grid">
+            <div>
+                <h2 class="page-title" style="font-size:16px;">Manage Users</h2>
+                <div class="table-container">
+                    <table>
+                        <thead><tr><th>Name</th><th>Email</th><th>Role</th><th></th></tr></thead>
+                        <tbody id="users-table">
+                            <tr><td colspan="4" style="color:#888;text-align:center;">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div>
+                <h2 class="page-title" style="font-size:16px;">Manage Listings</h2>
+                <div class="table-container">
+                    <table>
+                        <thead><tr><th>Title</th><th>Status</th><th></th></tr></thead>
+                        <tbody id="listings-table">
+                            <tr><td colspan="3" style="color:#888;text-align:center;">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API = 'http://localhost:5000/api';
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user'));
+
+        if (!token || !user || user.role !== 'Admin') window.location.href = 'index.html';
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'index.html';
+        }
+
+        function getRoleBadge(role) {
+            const map = { 'JobSeeker': 'badge-blue', 'Employer': 'badge-yellow', 'Admin': 'badge-gray' };
+            return `<span class="badge ${map[role] || 'badge-gray'}">${role}</span>`;
+        }
+
+        async function loadUsers() {
+            try {
+                const res = await fetch(`${API}/users`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const users = await res.json();
+
+                document.getElementById('stat-users').textContent = users.length;
+
+                document.getElementById('users-table').innerHTML = users.map(u => `
+                    <tr>
+                        <td>${u.FullName}</td>
+                        <td style="color:#888;font-size:12px;">${u.Email}</td>
+                        <td>${getRoleBadge(u.Role)}</td>
+                        <td><button class="btn-danger" onclick="deleteUser(${u.UserID})">Delete</button></td>
+                    </tr>
+                `).join('');
+            } catch (err) {
+                document.getElementById('users-table').innerHTML =
+                    '<tr><td colspan="4" style="color:#cc0000;text-align:center;">Failed to load users.</td></tr>';
+            }
+        }
+
+        async function loadListings() {
+            try {
+                const res = await fetch(`${API}/jobs`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const jobs = await res.json();
+
+                document.getElementById('stat-listings').textContent = jobs.filter(j => j.Status === 'Open').length;
+
+                document.getElementById('listings-table').innerHTML = jobs.map(job => `
+                    <tr>
+                        <td>${job.Title}</td>
+                        <td><span class="badge ${job.Status === 'Open' ? 'badge-green' : 'badge-red'}">${job.Status}</span></td>
+                        <td><button class="btn-danger" onclick="deleteListing(${job.JobID})">Delete</button></td>
+                    </tr>
+                `).join('');
+            } catch (err) {
+                document.getElementById('listings-table').innerHTML =
+                    '<tr><td colspan="3" style="color:#cc0000;text-align:center;">Failed to load listings.</td></tr>';
+            }
+        }
+
+        async function deleteUser(userId) {
+            if (!confirm('Delete this user?')) return;
+            try {
+                await fetch(`${API}/users/${userId}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                loadUsers();
+            } catch (err) {
+                alert('Failed to delete user');
+            }
+        }
+
+        async function deleteListing(jobId) {
+            if (!confirm('Delete this listing?')) return;
+            try {
+                await fetch(`${API}/jobs/${jobId}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                loadListings();
+            } catch (err) {
+                alert('Failed to delete listing');
+            }
+        }
+
+        loadUsers();
+        loadListings();
+    </script>
+</body>
+</html>
