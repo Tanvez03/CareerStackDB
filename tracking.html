@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CareerStack — My Applications</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <a class="brand" href="seeker.html">Career<span>Stack</span></a>
+        <div class="nav-links">
+            <a href="seeker.html">Find Jobs</a>
+            <a href="#" onclick="logout()">Logout</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="stat-grid">
+            <div class="stat-card"><div class="stat-label">Total applied</div><div class="stat-val" id="stat-total">—</div></div>
+            <div class="stat-card"><div class="stat-label">Under review</div><div class="stat-val" id="stat-reviewed" style="color:#0052cc">—</div></div>
+            <div class="stat-card"><div class="stat-label">Accepted</div><div class="stat-val" id="stat-accepted" style="color:#007a3d">—</div></div>
+        </div>
+
+        <div class="top-bar">
+            <h1 class="page-title" style="margin:0;">My Applications</h1>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Job Title</th>
+                        <th>Company</th>
+                        <th>Date Applied</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="applications-table">
+                    <tr><td colspan="4" style="color:#888;text-align:center;">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const API = 'http://localhost:5000/api';
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user'));
+
+        if (!token || !user) window.location.href = 'index.html';
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'index.html';
+        }
+
+        function getBadge(status) {
+            const map = {
+                'Pending': 'badge-yellow',
+                'Reviewed': 'badge-blue',
+                'Accepted': 'badge-green',
+                'Rejected': 'badge-red'
+            };
+            return `<span class="badge ${map[status] || 'badge-gray'}">${status}</span>`;
+        }
+
+        async function loadApplications() {
+            try {
+                const res = await fetch(`${API}/applications/my/${user.userId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const apps = await res.json();
+
+                document.getElementById('stat-total').textContent = apps.length;
+                document.getElementById('stat-reviewed').textContent = apps.filter(a => a.Status === 'Reviewed').length;
+                document.getElementById('stat-accepted').textContent = apps.filter(a => a.Status === 'Accepted').length;
+
+                const tbody = document.getElementById('applications-table');
+                if (apps.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" style="color:#888;text-align:center;">No applications yet.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = apps.map(app => `
+                    <tr>
+                        <td>${app.Title}</td>
+                        <td>${app.Company_Name}</td>
+                        <td>${new Date(app.submitted_at).toLocaleDateString()}</td>
+                        <td>${getBadge(app.Status)}</td>
+                    </tr>
+                `).join('');
+
+            } catch (err) {
+                document.getElementById('applications-table').innerHTML =
+                    '<tr><td colspan="4" style="color:#cc0000;text-align:center;">Failed to load applications.</td></tr>';
+            }
+        }
+
+        loadApplications();
+    </script>
+</body>
+</html>
