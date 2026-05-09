@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Users - Career Stack</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="admin-users-page">
+
+  <aside id="sidebar" class="sidebar">
+    <h2 class="sidebar-logo">Career<span>Stack</span></h2>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="jobs.html">Jobs</a>
+    <a href="admin-users.html">Users</a>
+    <button class="sidebar-logout" onclick="logout()">Logout</button>
+  </aside>
+
+  <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+
+  <main class="main-content">
+    <section class="container">
+      <h2>Manage Users</h2>
+      <p id="roleLabel">Admin Panel</p>
+      <div id="usersList">Loading users...</div>
+    </section>
+  </main>
+
+  <div id="toast"></div>
+
+  <script src="js/toast.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script src="js/admin-users.js"></script>
+  <script>
+    loadSidebarState();
+  </script>
+</body>
+</html>

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard - Career Stack</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="dashboard">
+
+  <aside id="sidebar" class="sidebar">
+    <h2 class="sidebar-logo">Career<span>Stack</span></h2>
+
+    <a href="dashboard.html">Dashboard</a>
+    <a href="jobs.html">Jobs</a>
+    <a id="navApplications" href="applications.html">My Applications</a>
+    <a id="navApplicants" href="employer-applicants.html">Applicants</a>
+
+    <button class="sidebar-logout" onclick="logout()">Logout</button>
+  </aside>
+
+  <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+
+  <main class="main-content">
+    <section class="container">
+
+      <h2>Career Stack Dashboard</h2>
+
+      <p id="roleLabel">Logged in as:</p>
+
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-label">Available Jobs</div>
+          <div class="stat-val" id="totalJobs">0</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-label" id="middleStatLabel">Applicants</div>
+          <div class="stat-val" id="totalApplications">0</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-label">Account Role</div>
+          <div class="stat-val" id="roleStat">--</div>
+        </div>
+      </div>
+
+      <div id="jobSeekerActions" class="action-grid">
+        <a class="action-card" href="jobs.html">
+          <span class="action-icon">💼</span>
+          <div>
+            <h4>Apply for a Job</h4>
+            <p>Browse available jobs and submit your resume.</p>
+          </div>
+        </a>
+
+        <a class="action-card" href="applications.html">
+          <span class="action-icon">📄</span>
+          <div>
+            <h4>My Applications</h4>
+            <p>Track application status and updates.</p>
+          </div>
+        </a>
+      </div>
+
+      <div id="employerActions" class="action-grid">
+        <a class="action-card" href="jobs.html">
+          <span class="action-icon">➕</span>
+          <div>
+            <h4>Create / View Jobs</h4>
+            <p>Post jobs and manage listings.</p>
+          </div>
+        </a>
+
+        <a class="action-card" href="employer-applicants.html">
+          <span class="action-icon">👥</span>
+          <div>
+            <h4>View Applicants</h4>
+            <p>Review candidates and update status.</p>
+          </div>
+        </a>
+      </div>
+
+        <div id="adminActions" class="action-grid">
+  <a class="action-card" href="jobs.html">
+    <span class="action-icon">🛠️</span>
+    <div>
+      <h4>Manage Jobs</h4>
+      <p>Edit or delete any job posting.</p>
+    </div>
+  </a>
+
+  <a class="action-card" href="admin-users.html">
+    <span class="action-icon">👤</span>
+    <div>
+      <h4>Manage Users</h4>
+      <p>View and delete user accounts.</p>
+    </div>
+  </a>
+</div>
+
+    </section>
+  </main>
+
+  <div id="toast"></div>
+
+  <script src="js/toast.js"></script>
+  <script src="js/sidebar.js"></script>
+
+  <script>
+    const API_URL = "http://localhost:5000/api";
+    const role = localStorage.getItem("role");
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      window.location.href = "login.html";
+    }
+
+    document.getElementById("roleLabel").innerText = "Logged in as: " + role;
+    document.getElementById("roleStat").innerText = role || "--";
+
+    const adminActions = document.getElementById("adminActions");
+
+    const navApplicants = document.getElementById("navApplicants");
+    const navApplications = document.getElementById("navApplications");
+
+    if (role === "JobSeeker") {
+      document.getElementById("jobSeekerActions").style.display = "grid";
+      document.getElementById("employerActions").style.display = "none";
+      navApplicants.style.display = "none";
+      document.getElementById("middleStatLabel").innerText = "My Applications";
+    }
+
+    if (role === "Employer") {
+      document.getElementById("jobSeekerActions").style.display = "none";
+      document.getElementById("employerActions").style.display = "grid";
+      navApplications.style.display = "none";
+      document.getElementById("middleStatLabel").innerText = "Applicants";
+    }
+
+    if (role === "Admin") {
+      jobSeekerActions.style.display = "none";
+      employerActions.style.display = "none";
+      adminActions.style.display = "grid";
+      navApplications.style.display = "none";
+      navApplicants.style.display = "none";
+      document.getElementById("middleStatLabel").innerText = "Users";
+    }
+    
+    async function loadStats() {
+      const jobsRes = await fetch(`${API_URL}/jobs`);
+      const jobs = await jobsRes.json();
+      document.getElementById("totalJobs").innerText = Array.isArray(jobs) ? jobs.length : 0;
+
+      if (role === "JobSeeker") {
+        const appRes = await fetch(`${API_URL}/applications/my`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        const apps = await appRes.json();
+        document.getElementById("totalApplications").innerText = Array.isArray(apps) ? apps.length : 0;
+      }
+
+      if (role === "Employer") {
+        const myJobsRes = await fetch(`${API_URL}/jobs/my-jobs`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        const myJobs = await myJobsRes.json();
+        let totalApplicants = 0;
+
+        if (Array.isArray(myJobs)) {
+          for (const job of myJobs) {
+            const appRes = await fetch(`${API_URL}/applications/job/${job.Job_ID}`, {
+              headers: { Authorization: `Bearer ${token}` }
+            });
+
+            const applicants = await appRes.json();
+
+            if (Array.isArray(applicants)) {
+              totalApplicants += applicants.length;
+            }
+          }
+        }
+
+        document.getElementById("totalApplications").innerText = totalApplicants;
+      }
+    }
+
+    function logout() {
+      localStorage.clear();
+      window.location.href = "login.html";
+    }
+
+    loadSidebarState();
+    loadStats();
+  </script>
+
+</body>
+</html>
