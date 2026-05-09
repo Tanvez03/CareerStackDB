@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Register - Career Stack</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="container">
+    <h2>Register</h2>
+
+    <input id="fullName" type="text" placeholder="Full Name">
+    <input id="email" type="email" placeholder="Email">
+    <input id="password" type="password" placeholder="Password">
+
+    <select id="role">
+      <option value="Employer">Employer</option>
+      <option value="JobSeeker">Job Seeker</option>
+    </select>
+
+    <button onclick="register()">Register</button>
+
+    <p>Already have an account? <a href="login.html">Login</a></p>
+  </div>
+  <div id="toast"></div>
+<script src="js/toast.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>

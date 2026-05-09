@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Jobs - Career Stack</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="jobs-page" onload="loadJobs()">
+
+ <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+
+<aside id="sidebar" class="sidebar">
+  <h2 class="sidebar-logo">Career<span>Stack</span></h2>
+
+  <a href="dashboard.html">Dashboard</a>
+  <a href="jobs.html">Jobs</a>
+  <a id="navApplications" href="applications.html">My Applications</a>
+  <a id="navApplicants" href="employer-applicants.html">Applicants</a>
+
+  <button class="sidebar-logout" onclick="logout()">Logout</button>
+</aside>
+
+  <div class="container">
+    <h2>Job Listings</h2>
+    <p id="roleLabel"></p>
+
+    <div id="createJobSection">
+      <h3>Create New Job</h3>
+
+      <input id="title" placeholder="Job Title">
+      <textarea id="description" placeholder="Job Description"></textarea>
+      <input id="location" placeholder="Location">
+      <input id="salary_min" type="number" placeholder="Minimum Salary">
+      <input id="salary_max" type="number" placeholder="Maximum Salary">
+
+      <select id="type">
+        <option value="Full-Time">Full-Time</option>
+        <option value="Part-Time">Part-Time</option>
+        <option value="Contract">Contract</option>
+      </select>
+
+      <input id="deadline" type="date">
+
+<button id="createJobBtn" onclick="createJob()">Create Job</button>      <hr>
+    </div>
+    <h3>Available Jobs</h3>
+    <div id="jobsList" class="job-list"></div>
+  </div>
+
+  <script src="js/auth.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/jobs.js"></script>
+  <script>
+    setupNav();
+  </script>
+
+  <div id="toast"></div>
+
+<script src="js/toast.js"></script>
+
+<script src="js/sidebar.js"></script>
+<script>
+  loadSidebarState();
+</script>
+</body>
+</html>
