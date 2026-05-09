@@ -7,11 +7,15 @@ dotenv.config();
 const pool = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
-
+const adminRoutes = require("./routes/adminRoutes");
+const jobRoutes = require("./routes/jobRoutes");
+const applicationRoutes = require("./routes/applicationRoutes");
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+
+app.use("/uploads", express.static("uploads"));
 
 app.get("/", (req, res) => {
   res.send("Career Stack Portal API is running");
@@ -31,11 +35,14 @@ app.get("/test-db", async (req, res) => {
     });
   }
 });
-console.log("authRoutes type:", typeof authRoutes);
-console.log("userRoutes type:", typeof userRoutes);
 
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/jobs", jobRoutes);
+app.use("/api/applications", applicationRoutes);
+
+app.use("/api/admin", adminRoutes);
+
 
 const PORT = process.env.PORT || 5000;
 

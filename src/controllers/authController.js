@@ -50,9 +50,11 @@ exports.register = async (req, res) => {
         [userId, "", "", ""]
       );
     } else if (role === "Admin") {
+      const adminId = Math.floor(10000 + Math.random() * 90000);
+
       await pool.query(
-        "INSERT INTO Admin (UserID) VALUES (?)",
-        [userId]
+        "INSERT INTO Admin (AdminID, UserID) VALUES (?, ?)",
+        [adminId, userId]
       );
     }
 
