@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Applicants - Career Stack</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body onload="loadEmployerJobs()">
+
+  
+  <nav>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="jobs.html">Jobs</a>
+
+    <a id="navApplications" href="applications.html">My Applications</a>
+    <a id="navApplicants" href="employer-applicants.html">Applicants</a>
+
+    <button onclick="logout()">Logout</button>
+  </nav>
+
+  <div class="container">
+    <h2>Employer Applicants</h2>
+
+    <h3>Your Jobs</h3>
+    <div id="employerJobsList"></div>
+
+    <h3>Applicants</h3>
+    <div id="applicantsList"></div>
+
+    <br>
+    <a href="dashboard.html">Back to Dashboard</a>
+    <button onclick="logout()">Logout</button>
+  </div>
+
+  <script src="js/auth.js"></script>
+  <script src="js/employer-applicants.js"></script>
+  <script src="js/nav.js"></script>
+<script>
+  setupNav();
+</script>
+
+<div id="toast"></div>
+
+<script src="js/toast.js"></script>
+<script src="js/sidebar.js"></script>
+<script>
+  loadSidebarState();
+</script>
+</body>
+</html>

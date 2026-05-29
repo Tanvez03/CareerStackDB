@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>My Applications - Career Stack</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body onload="loadApplications()">
+
+   <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+
+<aside id="sidebar" class="sidebar">
+  <h2 class="sidebar-logo">Career<span>Stack</span></h2>
+
+  <a href="dashboard.html">Dashboard</a>
+  <a href="jobs.html">Jobs</a>
+  <a id="navApplications" href="applications.html">My Applications</a>
+  <a id="navApplicants" href="employer-applicants.html">Applicants</a>
+
+  <button class="sidebar-logout" onclick="logout()">Logout</button>
+</aside>
+
+  <div class="container">
+    <h2>My Applications</h2>
+
+    <div id="applicationsList"></div>
+
+    <br>
+    <a href="jobs.html">Back to Jobs</a>
+    <button onclick="logout()">Logout</button>
+  </div>
+
+  <script src="js/auth.js"></script>
+  <script src="js/applications.js"></script>
+  <script src="js/nav.js"></script>
+<script>
+  setupNav();
+</script>
+<div id="toast"></div>
+
+<script src="js/toast.js"></script>
+
+<script src="js/sidebar.js"></script>
+<script>
+  loadSidebarState();
+</script>
+</body>
+</html>
