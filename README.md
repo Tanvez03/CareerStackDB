@@ -39,8 +39,8 @@ The application allows users to:
 career-stack-db/
 │
 ├── frontend/
-├── backend/
-├── database/
-├── assets/
+├── backend/src
+├── db/
+├── Screenshots/
 ├── README.md
 └── package.json
